@@ -2,9 +2,7 @@
 # vi: set ft=ruby :
 hosts = {
     "n1" => "192.168.77.10",
-    "n2" => "192.168.77.11",
-    "n3" => "192.168.77.12",
-    "n4" => "192.168.77.13"
+    "n2" => "192.168.77.11"
 }
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
@@ -16,11 +14,16 @@ Vagrant.configure("2") do |config|
     hosts.each do |name, ip|
         config.vm.define name do |machine|
             machine.vm.hostname = name
+
+            if name == "n1" then
+                machine.vm.network "forwarded_port", guest: 8001, host: 8001
+            end
+            
             machine.vm.network :private_network, ip: ip
             machine.vm.provider "virtualbox" do |v|
                 v.name = name
                 v.cpus = 2
-                v.memory = 1024
+                v.memory = 2048
             end
         end
     end
